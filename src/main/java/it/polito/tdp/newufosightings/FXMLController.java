@@ -1,9 +1,12 @@
 package it.polito.tdp.newufosightings;
 
 import java.net.URL;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import it.polito.tdp.newufosightings.model.Model;
+import it.polito.tdp.newufosightings.model.State;
+import it.polito.tdp.newufosightings.model.StatoP;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -33,7 +36,7 @@ public class FXMLController {
     private Button btnSelezionaAnno;
 
     @FXML
-    private ComboBox<?> cmbBoxForma;
+    private ComboBox<String> cmbBoxForma;
 
     @FXML
     private Button btnCreaGrafo;
@@ -50,16 +53,34 @@ public class FXMLController {
     @FXML
     void doCreaGrafo(ActionEvent event) {
 
+    	int anno=Integer.parseInt(this.txtAnno.getText());
+    	String shape=this.cmbBoxForma.getValue();
+    	model.creaGrafo(anno, shape);
+    	this.txtResult.appendText("Grafo creato con:\n#Vertici: "+model.nVertici()+"\n#Archi: "+model.nArchi()+"\n");
+    	
+    	for(StatoP sp:model.getSommaAdiacenti()) {
+    		this.txtResult.appendText(sp+"\n");
+    	}
+    	
     }
 
     @FXML
     void doSelezionaAnno(ActionEvent event) {
-
+    	int anno=Integer.parseInt(this.txtAnno.getText());
+    	this.cmbBoxForma.getItems().addAll(model.getShape(anno));
     }
 
     @FXML
     void doSimula(ActionEvent event) {
-
+    	this.txtResult.clear();
+    	int anno=Integer.parseInt(this.txtAnno.getText());
+    	String shape=this.cmbBoxForma.getValue();
+    	int T1=Integer.parseInt(this.txtT1.getText());
+    	int alpha=Integer.parseInt(this.txtAlfa.getText());
+    	Map<State,Double> map=model.doSimula(T1, alpha, anno, shape);
+    	for(State s:map.keySet()) {
+    	this.txtResult.appendText(String.format("Stato: %s, relativo edcon=%f\n", s,map.get(s)));
+    	}
     }
 
     @FXML
